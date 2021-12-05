@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <h1>Sudoku Game</h1>
+        <div id="setup_game">
+            <div id="diff">
+                <h3>Choose Diffculty:</h3>
+                <label for="Easy"><input id="diff_1" type="radio" name="diff" value="easy" checked> Easy</label>
+                <label for="Medium"><input id="diff_2" type="radio" name="diff" value="medium"> Medium</label>
+                <label for="Hard"><input id="diff_3" type="radio" name="diff" value="hard"> Hard</label>
+            </div>
+            <div id="time">
+                <h3>Choose Time:</h3>
+                <label for=""><input id="timer_1" type="radio" name="time" value="three" checked>3 Min</label>
+                <label for=""><input id="timer_2" type="radio" name="time" value="five">5 Min</label>
+                <label for=""><input id="timer_3" type="radio" name="time" value="ten">10 Min</label>
+            </div>
+            <div id="theme">
+                <h3>Choose Theme:</h3>
+                <label for="Light"><input onchange="setThemeOnChange()" id="theme_1" type="radio" name="theme" value="light" checked>Light</label>
+                <label for="Dark"><input onchange="setThemeOnChange()" id="theme_2" type="radio" name="theme" value="dark">Dark</label>
+
+            </div>
+        </div>
+       <div class="startbtn">
+        <button id="start_btn">Create New Game !</button>
+       </div>
+    </header>
+
+    <div id="stats">
+        <p id="timer"></p>
+        <p id="lives">3</p>
+    </div>
+    <div id="game">
+        <div id="board"></div>
+        <div id="number_container" class="hidden">
+            <p id="one">1</p>
+            <p id="two">2</p>
+            <p id="three">3</p>
+            <p id="four">4</p>
+            <p id="five">5</p>
+            <p id="six">6</p>
+            <p id="seven">7</p>
+            <p id="eight">8</p>
+            <p id="nine">9</p>
+
+
+        </div>
+    </div>
+
+    <footer>
+        <p>Copyright all right reserved by Aditya</p>
+
+    </footer>
+</body>
+<script src="index.js"></script>
+
+</html>
