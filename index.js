@@ -26,6 +26,35 @@ var disableSelect;
 window.onload = function () {
     //Run Start game function when button is clicked
     id("start_btn").addEventListener("click", startGame);
+    // Add event listner to each number and Number Container
+    for (let i = 0; i < id("number_container").children.length; i++) {
+        id("number_container").children[i].addEventListener("click", function () {
+
+            //if selecting is not disabled
+            if (!disableSelect) {
+                //if number is already selected
+                if (this.classList.contains("selected")) {
+                    //Then remove selection
+                    this.classList.remove("selected");
+                    selectedNum = null;
+                }
+                else {
+                    //Deselect all Number
+                    for (let i = 0; i < 9; i++) {
+                        id("number_container").children[i].classList.remove("selected");
+                    }
+                    //select it and update selectedNum variable
+                    this.classList.add("selected");
+                    selectedNum = this;
+                    updateMove();
+
+                }
+            }
+
+        });
+
+
+    }
 
 
 }
@@ -46,17 +75,17 @@ function startGame() {
 
     }
     // Set lives to 2 and enable selecting number and tiles
-    lives = 3;
+    lives = 15;
     disableSelect = false;
     id("lives").textContent = "Lives Remaining : 3";
     generateBoard(board);
     // start the timer
     setTimer();
     //sets theme based on input
-    if(id("theme_1").checked){
+    if (id("theme_1").checked) {
         qs("body").classList.remove('dark');
     }
-    else{
+    else {
         qs("body").classList.add('dark');
     }
     //show Number Container
@@ -80,19 +109,42 @@ function generateBoard(board) {
         }
         else {
             // add click event listner to the tile
+            tile.addEventListener("click", function () {
+                //if selecting is not disabled
+                if (!disableSelect) {
+                    //if the time is already selected
+                    if (tile.classList.contains("selected")) {
+                        //then remove selection
+                        tile.classList.remove("selected");
+                        selectedTile = null;
+
+                    }
+                    else {
+                        ///Deselect all tile
+                        for (let i = 0; i < 81; i++) {
+                            qsa(".tile")[i].classList.remove("selected");
+
+                        }
+                        //Add selection and update variable
+                        this.classList.add("selected");
+                        selectedTile = tile;
+                        updateMove();
+                    }
+                }
+            });
         }
 
         //Assign a tile id
-        tile.id=idCount;
+        tile.id = idCount;
         //Increment for next tile
-        idCount ++;
+        idCount++;
         //Add title class to all tiles
         tile.classList.add('tile');
-        if((tile.id > 17 && tile.id < 27) || (tile.id > 44 && tile.id < 54)){
+        if ((tile.id > 17 && tile.id < 27) || (tile.id > 44 && tile.id < 54)) {
             tile.classList.add('bottomBorder');
 
         }
-        if((tile.id+1)%9==3 || (tile.id+1)%9==6){
+        if ((tile.id + 1) % 9 == 3 || (tile.id + 1) % 9 == 6) {
             tile.classList.add('rightBorder');
 
         }
@@ -101,6 +153,118 @@ function generateBoard(board) {
 
     }
 
+}
+
+function updateMove() {
+    // If a tile and a number  is selected
+    if (selectedTile && selectedNum) {
+        //set the tile to the currrent number
+        selectedTile.textContent = selectedNum.textContent
+        //if the number matches the corresponding number in the soluction key
+        if (checkCorrect(selectedTile)) {
+            //Deselect the tile
+            selectedTile.classList.remove("selected");
+            selectedNum.classList.remove("selected");
+            //clear the selected variables
+            selectedNum = null;
+            selectedTile = null;
+            //check if board is completed
+            if(checkDone()){
+                endGame();
+            }
+            //if the number does not match the soluction key
+
+        }
+        else {
+            //Disable selecting new number for one Second
+
+            disableSelect = true;
+            //then make the tile red;
+            selectedTile.classList.add("incorrect");
+            //Run  in one second
+            setTimeout(() => {
+                //subtract lives by one 
+                lives--;
+                //if no lives left then end the game
+                if (lives === 0) {
+                    alert("Live end")
+                    endGame();
+                }
+                else {
+                    //if no lives lnot equal to zero
+                    //update the lives text
+
+                    id("lives").textContent = "Lives Remaining:" + lives
+
+                    //Renable selecting numbers and tiles
+                    disableSelect = false;
+                }
+                //restore tile and color and remove selected from both
+                selectedTile.classList.remove("incorrect");
+                selectedTile.classList.remove("selected");
+                selectedNum.classList.remove("selected");
+                ///clear the ytile text  and clear the tile variable
+                selectedTile.textContent = "";
+                selectedTile = null;
+                selectedNum = null;
+            }, 1500);
+
+        }
+    }
+
+}
+function checkDone(){
+    let tiles=qsa(".tile");
+    for (let i = 0; i < tiles.length; i++) {
+        if(tiles[i].textContent==="") 
+        return false;
+
+        }
+  
+        return true;
+        
+    
+}
+
+function endGame() {
+//Disabled moves and stop the timer
+disableSelect=true;
+clearTimeout(timer);
+//Display win or loss message
+if(lives===0 || timeRemaining===0){
+    id("lives").textContent="You Lost"
+}
+else{
+    id("lives").textContent="You Won !"
+
+}
+
+}
+function checkCorrect(tile) {
+    // console.log('tile check'+tile.id);
+
+    //set soluction based on the diffculty selectionas
+    if (id("diff_1").checked) {
+        soluction = easy[1];
+
+    }
+    else if (id("diff_2").checked) {
+        soluction = medium[1];
+
+    }
+    else {
+        soluction = hard[1];
+
+    }
+
+    //if tile number is equal to soluction number
+
+    if (soluction.charAt(tile.id) === tile.textContent) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 function clearPrevious() {
     console.log('clearPrevious');
@@ -126,32 +290,32 @@ function clearPrevious() {
     selectedNum = null
 }
 
-function setTimer(){
+function setTimer() {
     //setr timer remaining based on input
-    if(id("timer_1").checked) timeRemaining=60;
-    if(id("timer_2").checked) timeRemaining=300;
-    if(id("timer_3").checked) timeRemaining=600;
+    if (id("timer_1").checked) timeRemaining = 60;
+    if (id("timer_2").checked) timeRemaining = 300;
+    if (id("timer_3").checked) timeRemaining = 600;
 
     //sets the timer for first seconnd
 
-    id("timer").textContent=timeConversion(timeRemaining);
+    id("timer").textContent = timeConversion(timeRemaining);
     //sets timer to update every seconnd
-    timer=setInterval(function(){
+    timer = setInterval(function () {
         timeRemaining--;
-        
+
         //if no timer remaini9ng end the game
-        if(timeRemaining===0) endGame();
-        id("timer").textContent=timeConversion(timeRemaining);
-    },1000)
+        if (timeRemaining === 0) endGame();
+        id("timer").textContent = timeConversion(timeRemaining);
+    }, 1000)
 }
 
 //convert secons into MM:SS format
-function timeConversion(time){
+function timeConversion(time) {
 
-    let minutes=Math.floor(time/60);
-    if(minutes<10) minutes="0"+minutes;
-    let seconds=time%60;
-    if(seconds<10) seconds="0"+seconds;
+    let minutes = Math.floor(time / 60);
+    if (minutes < 10) minutes = "0" + minutes;
+    let seconds = time % 60;
+    if (seconds < 10) seconds = "0" + seconds;
 
     return minutes + ":" + seconds;
 
@@ -159,13 +323,13 @@ function timeConversion(time){
 }
 
 
-function setThemeOnChange(){
-    
+function setThemeOnChange() {
+
     //sets theme based on input
-    if(id("theme_1").checked){
+    if (id("theme_1").checked) {
         qs("body").classList.remove('dark');
     }
-    else{
+    else {
         qs("body").classList.add('dark');
     }
 }
